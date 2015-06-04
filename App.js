@@ -380,7 +380,18 @@ Ext.define('CustomApp', {
             rsd = rsd ? rsd : new Date(Ext.Date.now());
             red = red ? red : new Date(Ext.Date.now());
 
-            var title = app.TeamPresent ? rec.get('Project')._refObjectName + ': ' + rec.get('Name') : rec.get('Name');
+            var OwnerName = '';
+
+            //Collect all the tags into a space separated string
+            _.each(rec.get('Tags')._tagsNameArray, function(tag) {
+                OwnerName = OwnerName + tag.Name + ' ';
+            });
+
+            if (OwnerName.length >1)
+                OwnerName += ': ';
+
+            //Choose whether we are to take the subnode name or the tags
+            var title = app.TeamPresent ? rec.get('Project')._refObjectName + ': ' + rec.get('Name') : OwnerName + rec.get('Name');
 
             evts.push( new Extensible.calendar.data.EventModel({
                 "CalendarId": rec.get('WorkProduct')._ref,
@@ -392,6 +403,7 @@ Ext.define('CustomApp', {
                  "Colour" : rec.get(app._getRallyName('Colour')),   //Virtual 'colour' field (based on a state field)
                  "Url" :  Rally.util.Ref.getUrl(rec.get('_ref')),
                  "Notes" : rec.get('Notes'),
+                 "Location" : OwnerName,
 
                  //"Colour" : app._lookupTaskColour(rec.get('DisplayColor'), false),
                  //"Color" : app._lookupTaskColour(rec.get('DisplayColor'), false),
@@ -452,8 +464,8 @@ Ext.define('CustomApp', {
                                 id: app.id + '-cal-pnl',
                                 title: 'Activities',
                                 frame: true,
-                                width: 1024,
-                                height: 768
+                                width: 1120,    //Max size for Mac screen, Chrome, full screen with split column for key (Custom HTML panel)
+                                height: 800
                             });
                                         
                             app.add(app.calendarPanel);

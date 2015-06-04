@@ -6735,7 +6735,7 @@ Ext.define('Extensible.calendar.menu.Event', {
  *		datesLabelText: 'When',
  *		reminderLabelText: 'Reminder',
  *		notesLabelText: 'Notes',
- *		locationLabelText: 'Location',
+ *		locationLabelText: 'Owner',
  *		webLinkLabelText: 'Web Link',
  *		calendarLabelText: 'Calendar',
  *		repeatsLabelText: 'Repeats',
@@ -6774,7 +6774,7 @@ Ext.define('Extensible.calendar.form.EventDetails', {
     datesLabelText: 'When',
     reminderLabelText: 'Reminder',
     notesLabelText: 'Notes',
-    locationLabelText: 'Location',
+    locationLabelText: 'Owner',
     webLinkLabelText: 'Web Link',
     calendarLabelText: 'Program',
     colourLabelText: 'State',
@@ -6881,11 +6881,15 @@ Ext.define('Extensible.calendar.form.EventDetails', {
             growMax: 150,
             anchor: this.fieldAnchor
         });
-//        this.locationField = Ext.create('Ext.form.field.Text', {
-//            fieldLabel: this.locationLabelText,
-//            name: Extensible.calendar.data.EventMappings.Location.name,
-//            anchor: this.fieldAnchor
-//        });
+
+        //Hijacked to show owner of the activity
+        this.locationField = Ext.create('Ext.form.field.Text', {
+            readOnly: true,
+            fieldLabel: this.locationLabelText,
+            name: Extensible.calendar.data.EventMappings.Location.name,
+            anchor: this.fieldAnchor
+        });
+
         this.urlField = Ext.create('Ext.form.field.Text', {
             fieldLabel: this.webLinkLabelText,
             readOnly: true,
@@ -6899,8 +6903,8 @@ Ext.define('Extensible.calendar.form.EventDetails', {
 
         var rightFields = [],
                 leftFields = [this.titleField, this.dateRangeField, this.reminderField,
-//                    this.notesField, this.locationField, this.urlField];
-                    this.notesField, this.urlField];
+                    this.notesField, this.locationField, this.urlField];
+//                    this.notesField, this.urlField];
 
         if (this.recurrence) {
             this.recurrenceField = Ext.create('Extensible.form.recurrence.Fieldset', {

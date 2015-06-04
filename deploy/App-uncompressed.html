@@ -209,6 +209,34 @@
                     case 'Notes':
                         task.set('Notes', rec.get('Notes'));
                         break;
+                    case 'StartDate':
+                    case 'EndDate':
+
+                        //If it is an all day event, then deal with it above
+                        if (_.find(modifiedList, 'IsAllDay'))
+                            break;
+
+                        var startTime = rec.get('StartDate');
+                        var endTime = rec.get('EndDate');
+
+                        //Calculate to do hours from this change
+                        //If this is a multi-day event , then it is going to show as multiples of 24hours
+                        //There seems to be a bug with Timezones, so we will do it the hard way.....
+
+                        var diffTime = Ext.Date.getElapsed(startTime, Ext.Date.add(endTime, Ext.Date.MINUTE, 1)); //This is in millisecs
+
+                        //How many days was it?
+
+                        var days = Math.floor( diffTime / (24 * 60 * 60 * 1000));
+
+                        var adjustedTime = Ext.Date.add(startTime, Ext.Date.MILLI, days * (24 * 60 * 60 * 1000));
+
+                        diffTime = Ext.Date.getElapsed( adjustedTime, Ext.Date.add(endTime, Ext.Date.MINUTE, 1));
+
+                        task.set('Estimate', (Math.floor(days) * 8) + Math.floor(diffTime/(1000 * 60 * 60)));
+                        task.set(rsd, rec.get('StartDate'));
+                        task.set(red, rec.get('EndDate'));
+                        break;
                     default:
                         console.log("Unknown Field changed: " + fld);
                         break;
@@ -361,16 +389,30 @@
             rsd = rsd ? rsd : new Date(Ext.Date.now());
             red = red ? red : new Date(Ext.Date.now());
 
+            var OwnerName = '';
+
+            //Collect all the tags into a space separated string
+            _.each(rec.get('Tags')._tagsNameArray, function(tag) {
+                OwnerName = OwnerName + tag.Name + ' ';
+            });
+
+            if (OwnerName.length >1)
+                OwnerName += ': ';
+
+            //Choose whether we are to take the subnode name or the tags
+            var title = app.TeamPresent ? rec.get('Project')._refObjectName + ': ' + rec.get('Name') : OwnerName + rec.get('Name');
+
             evts.push( new Extensible.calendar.data.EventModel({
                 "CalendarId": rec.get('WorkProduct')._ref,
                 "EventId": rec.get('ObjectID'),
-                 "Title": rec.get('Name'),
+                 "Title": title,
                  "StartDate" : rsd,
                  "EndDate" : red,
                  "Color" : app._lookupTaskColour(rec.get(app._getRallyName('Colour')), 1), //Drawing colour
                  "Colour" : rec.get(app._getRallyName('Colour')),   //Virtual 'colour' field (based on a state field)
                  "Url" :  Rally.util.Ref.getUrl(rec.get('_ref')),
                  "Notes" : rec.get('Notes'),
+                 "Location" : OwnerName,
 
                  //"Colour" : app._lookupTaskColour(rec.get('DisplayColor'), false),
                  //"Color" : app._lookupTaskColour(rec.get('DisplayColor'), false),
@@ -431,8 +473,8 @@
                                 id: app.id + '-cal-pnl',
                                 title: 'Activities',
                                 frame: true,
-                                width: 1024,
-                                height: 768
+                                width: 1200,
+                                height: 800
                             });
                                         
                             app.add(app.calendarPanel);
@@ -7185,7 +7227,7 @@ Ext.define('Extensible.calendar.menu.Event', {
  *		datesLabelText: 'When',
  *		reminderLabelText: 'Reminder',
  *		notesLabelText: 'Notes',
- *		locationLabelText: 'Location',
+ *		locationLabelText: 'Owner',
  *		webLinkLabelText: 'Web Link',
  *		calendarLabelText: 'Calendar',
  *		repeatsLabelText: 'Repeats',
@@ -7224,7 +7266,7 @@ Ext.define('Extensible.calendar.form.EventDetails', {
     datesLabelText: 'When',
     reminderLabelText: 'Reminder',
     notesLabelText: 'Notes',
-    locationLabelText: 'Location',
+    locationLabelText: 'Owner',
     webLinkLabelText: 'Web Link',
     calendarLabelText: 'Program',
     colourLabelText: 'State',
@@ -7331,11 +7373,15 @@ Ext.define('Extensible.calendar.form.EventDetails', {
             growMax: 150,
             anchor: this.fieldAnchor
         });
-//        this.locationField = Ext.create('Ext.form.field.Text', {
-//            fieldLabel: this.locationLabelText,
-//            name: Extensible.calendar.data.EventMappings.Location.name,
-//            anchor: this.fieldAnchor
-//        });
+
+        //Hijacked to show owner of the activity
+        this.locationField = Ext.create('Ext.form.field.Text', {
+            readOnly: true,
+            fieldLabel: this.locationLabelText,
+            name: Extensible.calendar.data.EventMappings.Location.name,
+            anchor: this.fieldAnchor
+        });
+
         this.urlField = Ext.create('Ext.form.field.Text', {
             fieldLabel: this.webLinkLabelText,
             readOnly: true,
@@ -7349,8 +7395,8 @@ Ext.define('Extensible.calendar.form.EventDetails', {
 
         var rightFields = [],
                 leftFields = [this.titleField, this.dateRangeField, this.reminderField,
-//                    this.notesField, this.locationField, this.urlField];
-                    this.notesField, this.urlField];
+                    this.notesField, this.locationField, this.urlField];
+//                    this.notesField, this.urlField];
 
         if (this.recurrence) {
             this.recurrenceField = Ext.create('Extensible.form.recurrence.Fieldset', {
