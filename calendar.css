@@ -483,7 +483,6 @@ td.ext-cal-dtitle-today div {
     position: absolute;
     overflow: hidden;
     cursor: default;
-    color: #fff;
     -moz-user-select: none;
 }
 .ext-cal-evt dl {

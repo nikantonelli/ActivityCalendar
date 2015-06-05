@@ -10651,12 +10651,14 @@ Ext.define('Extensible.calendar.view.Month', {
             templateData = {},
             //The colorCls is a numeric number (stored in 'Color', not 'Colour')
             colorCls = 'x-cal-' + evtData[Extensible.calendar.data.EventMappings.Color.name] + '-ad',
+            txtColorCls = 'r-cal-' + evtData[Extensible.calendar.data.EventMappings.Color.name] + '-evt',
             title = evtData[M.Title.name],
             fmt = Extensible.Date.use24HourTime ? 'G:i ' : 'g:ia ',
             rec;
         
         extraClasses.push(colorCls);
-        
+        extraClasses.push(txtColorCls);
+
         if (evtData._renderAsAllDay) {
             extraClasses.push('ext-evt-block');
         }
@@ -11392,13 +11394,15 @@ Ext.define('Extensible.calendar.view.DayBody', {
         var M = Extensible.calendar.data.EventMappings,
             extraClasses = [this.getEventSelectorCls(evtData[M.EventId.name])],
             data = {},
-            colorCls = 'x-cal-' + evtData[Extensible.calendar.data.EventMappings.Colour.name] + '-ad',
+            txtColorCls = 'r-cal-' + evtData[Extensible.calendar.data.EventMappings.Color.name] + '-evt',
+            colorCls = 'x-cal-' + evtData[Extensible.calendar.data.EventMappings.Color.name] + '-ad',
             title = evtData[M.Title.name],
             fmt = Extensible.Date.use24HourTime ? 'G:i ' : 'g:ia ',
             rec;
 
         this.getTemplateEventBox(evtData);
 
+        extraClasses.push(txtColorCls);
         extraClasses.push(colorCls);
 
         extraClasses.push('ext-evt-block');
@@ -13538,7 +13542,6 @@ td.ext-cal-dtitle-today div {
   position: absolute;
   overflow: hidden;
   cursor: default;
-  color: #fff;
   -moz-user-select: none;
 }
 .ext-cal-evt dl {
@@ -14051,9 +14054,7 @@ td.ext-cal-dtitle-today div {
  * This is the text color for all-day and span events.
  * Changing this will affect all events across all calendars.
  */
-.ext-cal-evr,
-.ext-cal-evi,
-.ext-cal-evt dl {
+.ext-cal-evi dl {
   color: #fff;
 }
 /*========================================================
@@ -14102,6 +14103,21 @@ td.ext-cal-dtitle-today div {
  * calendar store.
  */
 /* ===== x-cal-1 ===== */
+.r-cal-1-evt,
+.r-cal-3-evt,
+.r-cal-4-evt,
+.r-cal-9-evt,
+.r-cal-11-evt {
+  color: #ffffff;
+}
+.r-cal-2-evt,
+.r-cal-5-evt,
+.r-cal-6-evt,
+.r-cal-7-evt,
+.r-cal-8-evt,
+.r-cal-10-evt {
+  color: #202020;
+}
 .x-cal-1,
 .x-cal-1-x .ext-cal-evb,
 .ext-ie .x-cal-1-ad,

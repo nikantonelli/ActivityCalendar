@@ -13,9 +13,8 @@
  * This is the text color for all-day and span events.
  * Changing this will affect all events across all calendars.
  */
-.ext-cal-evr,
-.ext-cal-evi,
-.ext-cal-evt dl {
+
+.ext-cal-evi dl {
     color: #fff;
 }
 
@@ -66,6 +65,22 @@
  * calendar store.
  */
 /* ===== x-cal-1 ===== */
+
+.r-cal-1-evt,
+.r-cal-3-evt,
+.r-cal-4-evt,
+.r-cal-9-evt,
+.r-cal-11-evt
+ { color: #ffffff; }
+
+.r-cal-2-evt,
+.r-cal-5-evt,
+.r-cal-6-evt,
+.r-cal-7-evt,
+.r-cal-8-evt,
+.r-cal-10-evt
+ { color: #202020; }
+
 .x-cal-1,
 .x-cal-1-x .ext-cal-evb,
 .ext-ie .x-cal-1-ad,

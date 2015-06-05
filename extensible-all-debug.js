@@ -10162,12 +10162,14 @@ Ext.define('Extensible.calendar.view.Month', {
             templateData = {},
             //The colorCls is a numeric number (stored in 'Color', not 'Colour')
             colorCls = 'x-cal-' + evtData[Extensible.calendar.data.EventMappings.Color.name] + '-ad',
+            txtColorCls = 'r-cal-' + evtData[Extensible.calendar.data.EventMappings.Color.name] + '-evt',
             title = evtData[M.Title.name],
             fmt = Extensible.Date.use24HourTime ? 'G:i ' : 'g:ia ',
             rec;
         
         extraClasses.push(colorCls);
-        
+        extraClasses.push(txtColorCls);
+
         if (evtData._renderAsAllDay) {
             extraClasses.push('ext-evt-block');
         }
@@ -10903,13 +10905,15 @@ Ext.define('Extensible.calendar.view.DayBody', {
         var M = Extensible.calendar.data.EventMappings,
             extraClasses = [this.getEventSelectorCls(evtData[M.EventId.name])],
             data = {},
-            colorCls = 'x-cal-' + evtData[Extensible.calendar.data.EventMappings.Colour.name] + '-ad',
+            txtColorCls = 'r-cal-' + evtData[Extensible.calendar.data.EventMappings.Color.name] + '-evt',
+            colorCls = 'x-cal-' + evtData[Extensible.calendar.data.EventMappings.Color.name] + '-ad',
             title = evtData[M.Title.name],
             fmt = Extensible.Date.use24HourTime ? 'G:i ' : 'g:ia ',
             rec;
 
         this.getTemplateEventBox(evtData);
 
+        extraClasses.push(txtColorCls);
         extraClasses.push(colorCls);
 
         extraClasses.push('ext-evt-block');
