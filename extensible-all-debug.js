@@ -6931,6 +6931,7 @@ Ext.define('Extensible.calendar.form.EventDetails', {
         }
 
         this.colourField = Ext.create('Rally.ui.combobox.FieldValueComboBox', {
+                useNullForNoEntryValue: true,   //Will go to 'default' setting
                 model: 'task',
                 fieldLabel: this.colourLabelText,
                 field: 'c_CoachState',

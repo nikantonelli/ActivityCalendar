@@ -53,7 +53,7 @@ Ext.define('CustomApp', {
         var myCtxt = Rally.environment.getContext();
         var myProj = myCtxt.getProject();
 
-        if (myProj.Children.Count > 0)
+        if (myProj.Children && myProj.Children.Count > 0)
         {
             app.TeamPresent = true;
         }
@@ -69,6 +69,7 @@ Ext.define('CustomApp', {
                 autoLoad: true,
                 listeners: {
                     'load' : app._tasksLoaded,
+                    'remove': function() { app.rallyTaskStore.sync(); },  //Save the change to the server
                     scope: app
                 },
                 filters: [
@@ -104,12 +105,13 @@ Ext.define('CustomApp', {
             listeners: {
                 'add': app._newEvent,
                 'update': app._updateEvent,
+                'bulkremove': app._removeEvent,
                 scope: app
             },
             scope: app
         });
 
-        Ext.util.Observable.capture( eventStore, function(event) { console.log(event, arguments);});
+        Ext.util.Observable.capture( eventStore, function(event) { console.log('event', event, arguments);});
 
         this._createCalendarStore(this, eventStore);
            
@@ -145,6 +147,8 @@ Ext.define('CustomApp', {
                 inst[0].set( rsd, rec.get('StartDate'));
                 inst[0].set( red, rec.get('EndDate'));
             }
+
+            rec.set('Color', this._lookupTaskColour(rec.get('Colour'), 1));
 
             this.rallyTaskStore.sync().then({
                 success: function(){
@@ -269,15 +273,8 @@ Ext.define('CustomApp', {
            //We don't have the 'get' routines for deleting.
         var task = this.rallyTaskStore.findRecord('ObjectID', Ext.get(rec).elements[0].get('EventId'));
 
-        task.destroy(). then({
-            success: function(task){
-                console.log ('Delete success', arguments);
-            },
-            failure: function(){
-                console.log ('Delete failed', arguments);
-            }
-        }, this);
-
+        this.rallyTaskStore.remove( task );
+        store.remove(rec);
 
     },
 
